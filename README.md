@@ -14,7 +14,9 @@ A Simple Tool Created to speed up the Privilege Escalation process && Automate A
 4. LinSmartPE Server                                                                                                                                                                         
 5. LinEnum Server 
 
-6. Automatically Copys PATH to ClipBoard
+6. File Upload From Target
+
+7. Automatically Copys PATH to ClipBoard
 
 
 
