@@ -2,6 +2,14 @@
 
 
 
+Download:
+
+
+git clone https://github.com/AbirNadav-dev/AllScript.git
+cd AllScript
+
+
+
 Usage ------> bash ./AllScript.sh
 
 
